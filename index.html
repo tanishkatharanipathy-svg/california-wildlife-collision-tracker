@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Wildlife-Vehicle Collision Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🚗🦌 California Wildlife-Vehicle Collision Tracker</h1>
+            <p>Comprehensive data on animal crossings, accidents, and crashes across California</p>
+            <p class="source-note">Data from: UC Davis Road Ecology Center | Caltrans | California Highway Patrol (CHP)</p>
+        </div>
+    </header>
+
+    <nav class="navbar">
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#map">Hotspot Map</a></li>
+            <li><a href="#rankings">Danger Rankings</a></li>
+            <li><a href="#statistics">Statistics</a></li>
+            <li><a href="#data">Data Table</a></li>
+            <li><a href="#sources">Sources</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- OVERVIEW SECTION -->
+        <section id="overview" class="section">
+            <h2>📊 Statewide Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Animals Killed Annually</h3>
+                    <p class="stat-number">48,000+</p>
+                    <small>Primarily mule deer & newts</small>
+                </div>
+                <div class="stat-card">
+                    <h3>Annual Cost</h3>
+                    <p class="stat-number">$230-300M</p>
+                    <small>Property damage & injuries</small>
+                </div>
+                <div class="stat-card">
+                    <h3>5-Year Total Cost</h3>
+                    <p class="stat-number">$1-2B</p>
+                    <small>2018-2023 estimate</small>
+                </div>
+                <div class="stat-card">
+                    <h3>Hotspots Identified</h3>
+                    <p class="stat-number">25+</p>
+                    <small>Critical collision zones</small>
+                </div>
+            </div>
+        </section>
+
+        <!-- MAP SECTION -->
+        <section id="map" class="section">
+            <h2>🗺️ Interactive Hotspot Map</h2>
+            <div id="mapContainer" style="height: 600px; border-radius: 8px; overflow: hidden; margin: 20px 0;"></div>
+            <p class="map-note">Click on markers to see detailed hotspot information. Red = Most Dangerous, Orange = High Risk, Yellow = Moderate Risk</p>
+        </section>
+
+        <!-- RANKINGS SECTION -->
+        <section id="rankings" class="section">
+            <h2>⚠️ Danger Rankings (Ranked by Collision Frequency)</h2>
+            <div class="filter-controls">
+                <input type="text" id="searchInput" placeholder="Search by location or highway..." class="search-box">
+                <select id="regionFilter" class="filter-select">
+                    <option value="">All Regions</option>
+                    <option value="Bay Area">Bay Area</option>
+                    <option value="Sierra Nevada">Sierra Nevada</option>
+                    <option value="Northern">Northern CA</option>
+                    <option value="Southern">Southern CA</option>
+                    <option value="Central Coast">Central Coast</option>
+                </select>
+            </div>
+            <table id="rankingsTable" class="rankings-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Location</th>
+                        <th>County</th>
+                        <th>Region</th>
+                        <th>Incidents/Year</th>
+                        <th>Primary Species</th>
+                        <th>Risk Level</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </section>
+
+        <!-- STATISTICS SECTION -->
+        <section id="statistics" class="section">
+            <h2>📈 Statistical Analysis</h2>
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <h3>Annual Collisions (2018-2023)</h3>
+                    <canvas id="annualChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <h3>Species Involved in Collisions</h3>
+                    <canvas id="speciesChart"></canvas>
+                </div>
+            </div>
+
+            <div class="species-stats">
+                <h3>Species Breakdown (2016-2023)</h3>
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Species</th>
+                            <th>Total Killed</th>
+                            <th>Annual Average</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Mule Deer</td>
+                            <td>48,000+</td>
+                            <td>~6,000/year</td>
+                        </tr>
+                        <tr>
+                            <td>Pacific Newts</td>
+                            <td>22,000+</td>
+                            <td>~2,750/year</td>
+                        </tr>
+                        <tr>
+                            <td>Coyotes</td>
+                            <td>2,000+</td>
+                            <td>~250/year</td>
+                        </tr>
+                        <tr>
+                            <td>Black Bears</td>
+                            <td>557</td>
+                            <td>~70/year</td>
+                        </tr>
+                        <tr>
+                            <td>Mountain Lions</td>
+                            <td>300+</td>
+                            <td>~40/year</td>
+                        </tr>
+                        <tr>
+                            <td>Other Mammals/Birds</td>
+                            <td>5,000+</td>
+                            <td>~625/year</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- DATA TABLE SECTION -->
+        <section id="data" class="section">
+            <h2>📋 Complete Hotspot Database</h2>
+            <div class="table-controls">
+                <input type="text" id="tableSearch" placeholder="Search hotspots..." class="search-box">
+                <select id="riskFilter" class="filter-select">
+                    <option value="">All Risk Levels</option>
+                    <option value="CRITICAL">CRITICAL</option>
+                    <option value="HIGH">HIGH</option>
+                    <option value="MODERATE">MODERATE</option>
+                </select>
+            </div>
+            <div class="table-scroll">
+                <table id="fullDataTable" class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Location</th>
+                            <th>County</th>
+                            <th>Incidents/Year</th>
+                            <th>Cost/Year</th>
+                            <th>Primary Species</th>
+                            <th>Risk Level</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fullTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SOURCES SECTION -->
+        <section id="sources" class="section sources">
+            <h2>📚 Data Sources & References</h2>
+            <div class="sources-grid">
+                <div class="source-card">
+                    <h3>🎓 UC Davis Road Ecology Center</h3>
+                    <ul>
+                        <li><a href="https://roadecology.ucdavis.edu/resources/2023-california-roadkill-hotspots-" target="_blank">2023 Roadkill Hotspots Report</a></li>
+                        <li><a href="https://roadecology.ucdavis.edu/resources/roadkill-preventable-natural-disaster" target="_blank">2024 "Roadkill: A Preventable Natural Disaster" Report</a></li>
+                        <li><a href="https://roadecology.ucdavis.edu/research/projects/ca-wvc-hotspots" target="_blank">CA WVC Hotspots Research Project</a></li>
+                    </ul>
+                </div>
+                <div class="source-card">
+                    <h3>🗺️ California Roadkill Observation System (CROS)</h3>
+                    <ul>
+                        <li><a href="https://www.wildlifecrossing.net/california/" target="_blank">Live Database & Interactive Map</a></li>
+                        <li><a href="https://www.wildlifecrossing.net/california/hotspots" target="_blank">Real-time Hotspot Map</a></li>
+                        <li>13-meter spatial accuracy | >97% species identification</li>
+                    </ul>
+                </div>
+                <div class="source-card">
+                    <h3>🚗 California DOT (Caltrans)</h3>
+                    <ul>
+                        <li><a href="https://dot.ca.gov/programs/research-innovation-system-information/annual-crash-data-on-california-state-highways" target="_blank">Annual Crash Data Reports</a></li>
+                        <li><a href="https://dot.ca.gov/-/media/dot-media/programs/environmental-analysis/documents/env/caltrans-wildlife-connectivity-report-ally.pdf" target="_blank">Wildlife Connectivity Report (2024)</a></li>
+                        <li>Downloadable datasets 2010-2024</li>
+                    </ul>
+                </div>
+                <div class="source-card">
+                    <h3>🚔 California Highway Patrol (CHP)</h3>
+                    <ul>
+                        <li><a href="https://data.ca.gov/dataset/ccrs" target="_blank">Crash Reporting System (CCRS)</a></li>
+                        <li>44,000+ traffic incidents (2009-2020)</li>
+                        <li>Downloadable raw data by year</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="methodology">
+                <h3>📝 Data Collection Methodology</h3>
+                <p><strong>Sources:</strong> California Highway Patrol (CHP) incident reports, California Roadkill Observation System (CROS) citizen science observations, and Caltrans official records.</p>
+                <p><strong>Accuracy:</strong> CROS data has 13-meter spatial accuracy with >97% species identification rate. Data spans 2009-2024 with continuous updates.</p>
+                <p><strong>Coverage:</strong> ~15,000 miles of California state highways monitored. Note: Actual collision numbers are likely higher due to unreported incidents.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 California Wildlife-Vehicle Collision Tracker | Data sourced from UC Davis Road Ecology Center, Caltrans, & CHP</p>
+        <p>For more information, visit <a href="https://www.wildlifecrossing.net/california/" target="_blank">Wildlife Crossing CA</a></p>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
